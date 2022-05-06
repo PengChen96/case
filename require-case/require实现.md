@@ -113,7 +113,7 @@ Module.wrapper = [
 ];
 ```
 
-[完整代码]('./MyRequireBasic.js')
+[完整代码](https://github.com/PengChen96/case/blob/master/require-case/MyRequireBasic.js)
 
 ##### 验证一下
 我们新建test.js和test.json文件，然后通过我们写的MyRequire方法去加载它。
@@ -276,7 +276,7 @@ console.log(sum(1, 2)); // 3
 ```
 然后我们执行`node MyRequire.js`，结果符合预期。
 
-[完整代码]('./MyRequire.js');
+[完整代码](https://github.com/PengChen96/case/blob/master/require-case/MyRequire.js)
 
 #### 二、加入缓存
 #### 三、循环加载
