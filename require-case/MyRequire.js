@@ -3,6 +3,7 @@ const fs = require('fs');
 const vm = require('vm');
 
 function Module(id = '', parent) {
+  this.__flag__ = 'my_require';
   this.id = id;
   this.path = path.dirname(id);
   this.exports = {};
@@ -10,6 +11,7 @@ function Module(id = '', parent) {
   this.loaded = false;
 }
 
+Module._cache = Object.create(null);
 Module._extensions = Object.create(null);
 
 Module.prototype.require = MyRequire = (id, mainModule) => {
@@ -19,8 +21,21 @@ Module.prototype.require = MyRequire = (id, mainModule) => {
 
 Module._load = function (request, parent, isMain) {
   const filename = Module._resolveFilename(request, parent, isMain);
+  const cachedModule = Module._cache[filename];
+  if (cachedModule !== undefined) {
+    return cachedModule.exports;
+  }
   const module = new Module(filename, parent);
-  module.load(filename);
+  Module._cache[filename] = module; // 加入缓存
+  let threw = true;
+  try {
+    module.load(filename);
+    threw = false;
+  } finally {
+    if (threw) { // 加载失败移除缓存
+      delete Module._cache[filename];
+    }
+  }
   return module.exports;
 }
 

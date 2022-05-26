@@ -279,4 +279,28 @@ console.log(sum(1, 2)); // 3
 [完整代码](https://github.com/PengChen96/case/blob/master/require-case/MyRequire.js)
 
 #### 二、加入缓存
-#### 三、循环加载
+添加缓存，就是以filename为key，module为value存到Module._cache中，加载文件时先去_cache中去查找，存在就返回，不存在就去加载文件，然后放入缓存。
+1. 修改Module._load方法
+```javascript
+Module._load = function (request, parent, isMain) {
+  const filename = Module._resolveFilename(request, parent, isMain);
+  const cachedModule = Module._cache[filename];
+  if (cachedModule !== undefined) {
+    return cachedModule.exports;
+  }
+  const module = new Module(filename, parent);
+  Module._cache[filename] = module; // 加入缓存
+  let threw = true;
+  try {
+    module.load(filename);
+    threw = false;
+  } finally {
+    if (threw) { // 加载失败移除缓存
+       delete Module._cache[filename];
+    }
+  }
+  return module.exports;
+}
+```
+[完整代码](https://github.com/PengChen96/case/blob/master/require-case/MyRequire.js)
+
